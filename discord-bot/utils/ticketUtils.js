@@ -109,8 +109,14 @@ async function createTicket(interaction, ticketType) {
   const ticketEmbed = buildTicketEmbed(user, ticketType, ticketNumber);
   const buttons = buildTicketButtons();
 
+  // بناء محتوى الرسالة: منشن صاحب التكت + منشن رتبة الدعم إن وجدت
+  let mentionContent = `<@${user.id}>`;
+  if (settings.supportRoleId) {
+    mentionContent += ` | <@&${settings.supportRoleId}>`;
+  }
+
   const message = await ticketChannel.send({
-    content: `<@${user.id}>`,
+    content: mentionContent,
     embeds: [ticketEmbed],
     components: [buttons],
   });

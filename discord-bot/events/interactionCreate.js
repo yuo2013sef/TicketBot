@@ -8,6 +8,7 @@ const {
 } = require('discord.js');
 const { getSettings, getTicket, saveTicket, deleteTicket } = require('../utils/dataUtils');
 const { createTicket, buildTicketButtons, isSupervisor, sendLog } = require('../utils/ticketUtils');
+const { generateTranscript } = require('../utils/transcriptUtils');
 const {
   buildClaimEmbed,
   buildAddMemberEmbed,
@@ -502,7 +503,7 @@ async function handleCloseTicket(interaction) {
 }
 
 // ====================================================
-// حذف التذكرة نهائياً
+// حذف التذكرة نهائياً + توليد ملف اللوق
 // ====================================================
 async function handleDeleteTicket(interaction) {
   await interaction.deferUpdate();
@@ -510,24 +511,57 @@ async function handleDeleteTicket(interaction) {
   const guild = interaction.guild;
   const settings = getSettings(guild.id);
   const ticket = getTicket(interaction.channel.id);
+  const channel = interaction.channel;
 
-  // إرسال سجل قبل الحذف
-  await sendLog(guild, settings, buildLogEmbed(
+  await channel.send('📄 جاري توليد ملف اللوق، انتظر لحظة...');
+
+  // ====== توليد ملف الترانسكريبت ======
+  let transcriptAttachment = null;
+  let messageCount = 0;
+  try {
+    const result = await generateTranscript(channel, ticket || {
+      paddedNumber: '0000',
+      ownerTag: 'unknown',
+      ticketType: 'غير معروف',
+      createdAt: Date.now(),
+    });
+    transcriptAttachment = result.attachment;
+    messageCount = result.messageCount;
+  } catch (err) {
+    console.error('❌ فشل توليد الترانسكريبت:', err.message);
+  }
+
+  // ====== إرسال اللوق مع الملف في روم السجلات ======
+  const logEmbed = buildLogEmbed(
     '🗑️ تم حذف تذكرة',
     [
       { name: '👤 حذفها', value: `<@${interaction.user.id}> (${interaction.user.tag})`, inline: true },
       { name: '🔢 الرقم', value: ticket ? `#${ticket.paddedNumber}` : 'غير معروف', inline: true },
       { name: '👤 صاحب التذكرة', value: ticket ? `<@${ticket.ownerId}>` : 'غير معروف', inline: true },
+      { name: '📂 النوع', value: ticket ? (ticket.ticketType || 'غير معروف') : 'غير معروف', inline: true },
+      { name: '💬 عدد الرسائل', value: `${messageCount} رسالة`, inline: true },
     ],
     config.colors.danger
-  ));
+  );
+
+  if (settings.logChannelId) {
+    const logChannel = guild.channels.cache.get(settings.logChannelId);
+    if (logChannel) {
+      const logPayload = { embeds: [logEmbed] };
+      if (transcriptAttachment) {
+        logPayload.files = [transcriptAttachment];
+        logPayload.content = '📎 **ملف اللوق الكامل للتذكرة:**';
+      }
+      await logChannel.send(logPayload).catch(() => {});
+    }
+  }
 
   // حذف البيانات
-  deleteTicket(interaction.channel.id);
+  deleteTicket(channel.id);
 
   // حذف القناة بعد 3 ثواني
-  await interaction.channel.send('🗑️ سيتم حذف هذه القناة خلال **3 ثوانٍ**...');
+  await channel.send('🗑️ سيتم حذف هذه القناة خلال **3 ثوانٍ**...');
   setTimeout(() => {
-    interaction.channel.delete('حذف التذكرة').catch(() => {});
+    channel.delete('حذف التذكرة').catch(() => {});
   }, 3000);
 }
