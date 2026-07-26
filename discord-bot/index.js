@@ -7,6 +7,7 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent, // مطلوب لقراءة رسائل التذاكر في اللوق
   ],
   partials: [Partials.Channel, Partials.Message],
 });

@@ -61,5 +61,6 @@ module.exports = {
     await interaction.editReply({
       content: `✅ تم إرسال لوحة التذاكر في <#${targetChannel.id}> بنجاح!${logMsg}`,
     });
+    setTimeout(() => interaction.deleteReply().catch(() => {}), 5000);
   },
 };

@@ -98,7 +98,7 @@ async function handleTicketTypeSelect(interaction) {
   const guild = interaction.guild;
   const user = interaction.user;
 
-  // التحقق من وجود تذكرة مفتوحة للمستخدم
+  // التحقق من وجود تذكرة مفتوحة فعلاً (القناة موجودة + الحالة مفتوحة)
   const { readJSON } = getTicketDataCheck();
   const allTickets = readJSON();
   const existingTicket = Object.values(allTickets).find(
@@ -106,11 +106,18 @@ async function handleTicketTypeSelect(interaction) {
   );
 
   if (existingTicket) {
+    // تحقق من أن القناة لا تزال موجودة فعلاً في السيرفر
     const ch = guild.channels.cache.get(existingTicket.channelId);
     if (ch) {
-      return interaction.editReply({
+      await interaction.editReply({
         content: `❌ لديك تذكرة مفتوحة بالفعل! <#${ch.id}>`,
       });
+      // حذف الرد بعد 5 ثواني
+      setTimeout(() => interaction.deleteReply().catch(() => {}), 5000);
+      return;
+    } else {
+      // القناة حُذفت لكن البيانات لم تُحذف → نظّف البيانات القديمة
+      deleteTicket(existingTicket.channelId);
     }
   }
 
@@ -119,6 +126,8 @@ async function handleTicketTypeSelect(interaction) {
   await interaction.editReply({
     content: `✅ تم إنشاء تذكرتك بنجاح! <#${ticketChannel.id}>`,
   });
+  // حذف الرد بعد 5 ثواني
+  setTimeout(() => interaction.deleteReply().catch(() => {}), 5000);
 }
 
 function getTicketDataCheck() {

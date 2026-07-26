@@ -35,5 +35,6 @@ module.exports = {
     );
 
     await interaction.editReply({ embeds: [embed] });
+    setTimeout(() => interaction.deleteReply().catch(() => {}), 5000);
   },
 };
