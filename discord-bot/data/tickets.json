@@ -1,1 +1,16 @@
-{}
+{
+  "1530911498736767117": {
+    "channelId": "1530911498736767117",
+    "guildId": "1500817667689414776",
+    "ownerId": "1417912799148900448",
+    "ownerTag": "4m0i",
+    "ticketType": "شكوى",
+    "ticketNumber": 4,
+    "paddedNumber": "0004",
+    "claimedBy": "1417912799148900448",
+    "claimedAt": 1785068192384,
+    "members": [],
+    "createdAt": 1785068144552,
+    "status": "مُستلَمة"
+  }
+}

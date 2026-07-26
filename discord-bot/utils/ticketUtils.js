@@ -49,22 +49,26 @@ async function createTicket(interaction, ticketType) {
     },
   ];
 
-  // إضافة صلاحيات رتبة الدعم
+  // رتبة الدعم: مشاهدة فقط — لا كتابة ولا ثريدات حتى يستلم أحدهم التكت
   if (settings.supportRoleId) {
     permissionOverwrites.push({
       id: settings.supportRoleId,
       allow: [
         PermissionFlagsBits.ViewChannel,
-        PermissionFlagsBits.SendMessages,
         PermissionFlagsBits.ReadMessageHistory,
+      ],
+      deny: [
+        PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.CreatePublicThreads,
+        PermissionFlagsBits.CreatePrivateThreads,
+        PermissionFlagsBits.SendMessagesInThreads,
         PermissionFlagsBits.AttachFiles,
         PermissionFlagsBits.EmbedLinks,
-        PermissionFlagsBits.ManageMessages,
       ],
     });
   }
 
-  // إضافة صلاحيات رتبة مشرف التكتات
+  // رتبة مشرف التكتات: صلاحيات كاملة دائماً بدون قيود
   if (settings.supervisorRoleId) {
     permissionOverwrites.push({
       id: settings.supervisorRoleId,
@@ -75,6 +79,8 @@ async function createTicket(interaction, ticketType) {
         PermissionFlagsBits.AttachFiles,
         PermissionFlagsBits.EmbedLinks,
         PermissionFlagsBits.ManageMessages,
+        PermissionFlagsBits.CreatePublicThreads,
+        PermissionFlagsBits.SendMessagesInThreads,
       ],
     });
   }

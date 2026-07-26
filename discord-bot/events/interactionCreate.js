@@ -181,36 +181,34 @@ async function handleClaimTicket(interaction) {
   ticket.status = 'مُستلَمة';
   saveTicket(interaction.channel.id, ticket);
 
-  // تعديل صلاحيات القناة:
-  // 1. إزالة صلاحية الكتابة من رتبة الدعم بالكامل
-  // 2. إبقاء رتبة المشرف تكتب
-  // 3. إعطاء الإداري المستلم صلاحية الكتابة
   const channel = interaction.channel;
 
-  // سحب صلاحية الكتابة من رتبة الدعم
+  // رتبة الدعم: تبقى مشاهدة فقط (لا تغيير، هكذا أُنشئت)
+  // نعيد تأكيد الـ deny صراحةً لضمان عدم الكتابة
   if (settings.supportRoleId) {
     await channel.permissionOverwrites.edit(settings.supportRoleId, {
+      ViewChannel: true,
+      ReadMessageHistory: true,
       SendMessages: false,
+      CreatePublicThreads: false,
+      CreatePrivateThreads: false,
+      SendMessagesInThreads: false,
+      AttachFiles: false,
+      EmbedLinks: false,
     }).catch(() => {});
   }
 
-  // الإداري المستلم يحصل على صلاحية الكتابة بشكل صريح
+  // الإداري المستلم فقط يحصل على صلاحية الكتابة الكاملة
   await channel.permissionOverwrites.edit(admin.id, {
     ViewChannel: true,
     SendMessages: true,
     ReadMessageHistory: true,
     AttachFiles: true,
     EmbedLinks: true,
+    CreatePublicThreads: false,
+    CreatePrivateThreads: false,
+    SendMessagesInThreads: false,
   }).catch(() => {});
-
-  // رتبة مشرف التكتات تبقى تكتب
-  if (settings.supervisorRoleId) {
-    await channel.permissionOverwrites.edit(settings.supervisorRoleId, {
-      ViewChannel: true,
-      SendMessages: true,
-      ReadMessageHistory: true,
-    }).catch(() => {});
-  }
 
   // إرسال Embed الاستلام
   const claimEmbed = buildClaimEmbed(admin, ticket.ticketNumber);
