@@ -2,11 +2,11 @@ const { REST, Routes, ActivityType } = require('discord.js');
 const config = require('../config/config');
 
 module.exports = {
-  name: 'ready',
+  name: 'clientReady',
   once: true,
   async execute(client) {
     console.log(`\n✅ البوت يعمل الآن: ${client.user.tag}`);
-    console.log(`📊 يخدم ${client.guilds.cache.size} سيرفر\n`);
+    console.log(`📊 يخدم ${client.guilds.cache.size} سيرفر`);
 
     // تعيين نشاط البوت
     client.user.setPresence({
@@ -19,8 +19,14 @@ module.exports = {
       status: 'online',
     });
 
-    // نشر أوامر Slash
-    await deployCommands(client);
+    if (client.guilds.cache.size === 0) {
+      console.log('\n⚠️  البوت لم يُضف لأي سيرفر بعد.');
+      console.log('🔗 أضف البوت للسيرفر من خلال:');
+      console.log(`   https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands\n`);
+    } else {
+      // نشر أوامر Slash
+      await deployCommands(client);
+    }
   },
 };
 
