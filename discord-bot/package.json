@@ -1,0 +1,20 @@
+{
+  "name": "discord-ticket-bot",
+  "version": "1.0.0",
+  "description": "بوت نظام التذاكر لـ Discord باللغة العربية",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "@discordjs/rest": "^2.3.0",
+    "discord-api-types": "^0.37.97",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "ISC"
+}
