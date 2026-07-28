@@ -1,16 +1,16 @@
 {
-  "1530911498736767117": {
-    "channelId": "1530911498736767117",
+  "1530931436193058876": {
+    "channelId": "1530931436193058876",
     "guildId": "1500817667689414776",
-    "ownerId": "1417912799148900448",
-    "ownerTag": "4m0i",
-    "ticketType": "شكوى",
-    "ticketNumber": 4,
-    "paddedNumber": "0004",
-    "claimedBy": "1417912799148900448",
-    "claimedAt": 1785068192384,
+    "ownerId": "920346831597207674",
+    "ownerTag": "u_7n",
+    "ticketType": "دعم-فني",
+    "ticketNumber": 5,
+    "paddedNumber": "0005",
+    "claimedBy": "920346831597207674",
+    "claimedAt": 1785072917061,
     "members": [],
-    "createdAt": 1785068144552,
+    "createdAt": 1785072897971,
     "status": "مُستلَمة"
   }
 }
